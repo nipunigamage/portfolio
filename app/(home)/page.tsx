@@ -6,9 +6,17 @@ import { motion } from 'motion/react';
 export default function Home() {
 	const [stars, setStars] = useState<{ x: number; y: number; size: number; color: string; duration: number; delay: number }[]>([]);
 	const [shootingStars, setShootingStars] = useState<{ id: string; top: string; left: string }[]>([]);
+	const [rotationAngle, setRotationAngle] = useState(115);
 
 	// Generate random stars
 	useEffect(() => {
+		const handleResize = () => {
+			const width = window.innerWidth;
+			const height = window.innerHeight;
+			const angle = findAngle(height, width);
+			setRotationAngle(180 - angle);
+		};
+
 		const generateStars = () => {
 			const starCount = window.innerWidth < 768 ? 16 : 32; // Reduce stars on mobile
 			const newStars = Array.from({ length: starCount }, () => ({
@@ -26,20 +34,20 @@ export default function Home() {
 		const addShootingStar = () => {
 			const newStar = {
 				id: Math.random().toString(36).substring(2, 9),
-				top: Math.random() * 100 + '%',
-				left: Math.random() * 100 + '%',
+				top: Math.random() * rotationAngle + '%',
+				left: Math.random() * rotationAngle + '%',
 			};
 			setShootingStars((prev) => [...prev, newStar]);
 
-			// Remove the shooting star after its animation ends
 			setTimeout(() => {
 				setShootingStars((prev) => prev.filter((star) => star.id !== newStar.id));
-			}, 3000); // Matches the animation duration
+			}, 3000);
 		};
 
 		const shootingStarInterval = setInterval(addShootingStar, Math.random() * 4000 + 1000);
 
 		generateStars();
+		handleResize();
 		window.addEventListener('resize', generateStars);
 		return () => {
 			window.removeEventListener('resize', generateStars);
@@ -49,10 +57,14 @@ export default function Home() {
 
 	// Function to generate a random star color
 	const getRandomStarColor = () => {
-		const hue = Math.random() < 0.8 ? Math.random() * 40 + 200 : Math.random() * 30 + 40; // 80% blue/white, 20% yellow
-		const saturation = 50; // Vibrancy
-		const lightness = Math.random() * 30 + 70; // Brightness
+		const hue = Math.random() < 0.8 ? Math.random() * 40 + 200 : Math.random() * 30 + 40;
+		const saturation = 50;
+		const lightness = Math.random() * 30 + 70;
 		return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+	};
+
+	const findAngle = (opposite: number, adjacent: number) => {
+		return Math.atan(opposite / adjacent) * (180 / Math.PI);
 	};
 
 	return (
@@ -62,10 +74,14 @@ export default function Home() {
 				<h1 className='font-playfair bg-gradient-to-tr from-white to-amber-50 bg-clip-text px-4 pb-8 text-4xl uppercase tracking-wide text-transparent md:text-6xl'>Nipuni Gamage</h1>
 			</div>
 
-			<div className='absolute z-10 mix-blend-overlay saturate-0'>
+			<div className='absolute z-10 mix-blend-soft-light saturate-0'>
 				<video autoPlay loop muted className='min-h-screen w-auto min-w-full object-cover'>
 					<source src='clouds.mp4' type='video/mp4' />
 				</video>
+			</div>
+
+			<div className='absolute flex h-full w-full items-center justify-center'>
+				<div className='z-50 size-96 bg-[url(/clouds1.png)]' />
 			</div>
 
 			{/* Moon */}
@@ -75,22 +91,29 @@ export default function Home() {
 			{shootingStars.map((star) => (
 				<motion.div
 					key={star.id}
-					className='absolute bg-white'
+					className='absolute z-10 bg-gradient-to-t from-white to-transparent'
 					style={{
 						top: star.top,
 						left: star.left,
-						width: '1px',
-						height: '16px',
+						width: '24px',
+						height: '1px',
 						borderRadius: '1px',
+						boxShadow: '0 0 8px 1px rgba(255, 255, 255, 0.75)',
+						filter: 'blur(0.5px)',
 					}}
-					initial={{ opacity: 1, rotate: 115, x: '0vw', y: '0vh' }}
+					initial={{
+						opacity: 1,
+						rotate: 180 - rotationAngle,
+						x: '0vw',
+						y: '0vh',
+					}}
 					animate={{
 						opacity: 0,
 						x: '100vw',
 						y: '100vh',
 					}}
 					transition={{
-						duration: 6,
+						duration: window.innerWidth < 768 ? 2 : 3,
 						ease: 'linear',
 					}}
 				/>
