@@ -2,20 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+.font-playfair {
+	font-family: var(--font-playfair);
+}
+
+.font-manrope {
+	font-family: var(--font-manrope);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+	font-family: var(--font-manrope);
+	font-weight: 500;
 }
