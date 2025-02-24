@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
 	return (
-		<html lang='en'>
+		<html lang='en' className='bg-black'>
 			<body className={`${playfair.variable} ${manrope.variable} antialiased`}>
 				<Lenis>{children}</Lenis>
 			</body>
